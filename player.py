@@ -1,5 +1,3 @@
-from pygame.transform import rotate
-
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED
 import pygame
@@ -7,14 +5,27 @@ import pygame
 class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
+        # Make the surface larger to accommodate rotation
+        surface_size = int(PLAYER_RADIUS * 2 * 1.414)  # multiply by sqrt(2)
+        self.image = pygame.Surface((surface_size, surface_size), pygame.SRCALPHA)
+        self.rect = self.image.get_rect(center=(x, y))
         self.rotation = 0
+        self.redraw()
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
 
-    def update(self, dt):
-        keys = pygame.key.get_pressed()
+    def redraw(self):
+        # Clear the surface
+        self.image.fill((0,0,0,0))
+        # Convert triangle points to surface coordinates
+        local_points = [point - self.position + pygame.Vector2(self.rect.width/2, self.rect.height/2) for point in self.triangle()]
+        # Draw on the surface
+        pygame.draw.polygon(self.image, "white", local_points, width=2)
 
+    def update(self, dt):
+        # Keep existing update code
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
             self.rotate(-dt)
         if keys[pygame.K_d]:
@@ -23,6 +34,9 @@ class Player(CircleShape):
             self.move(dt)
         if keys[pygame.K_s]:
             self.move(-dt)
+        # Update rect position and redraw
+        self.rect.center = self.position
+        self.redraw()
 
     def move(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
