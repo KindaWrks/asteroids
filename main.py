@@ -1,6 +1,9 @@
+import sys
+
 import pygame
 from pygame.display import update
 
+from shot import Shot
 from asteroidfield import AsteroidField
 from asteroid import Asteroid
 from player import Player
@@ -19,8 +22,10 @@ def main():
     y = SCREEN_HEIGHT / 2
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     Asteroid.containers = (asteroids, updatable, drawable)
+    Shot.containers = (shots, updatable, drawable)
     AsteroidField.containers = (updatable,)
     asteroid_field = AsteroidField()
     Player.containers = (updatable, drawable)
@@ -36,6 +41,16 @@ def main():
         # These should be outside the event loop
         screen.fill("black")
         updatable.update(dt)
+
+        for asteroid in asteroids:
+            if asteroid.collides_with(player):
+                print("Game over!")
+                sys.exit()
+            for shot in shots:
+                if asteroid.collides_with(shot):
+                    asteroid.split()
+                    shot.kill()
+
         drawable.draw(screen)
         pygame.display.flip()
 
