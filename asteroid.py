@@ -15,7 +15,7 @@ class Asteroid(CircleShape):
 
     def split(self):
         self.kill()
-        if self.radius <= ASTEROID_MIN_RADIUS:  # Fix the colon here
+        if self.radius <= ASTEROID_MIN_RADIUS:  # Fix the colon herez
             return
 
         random_angle = random.uniform(20, 50)

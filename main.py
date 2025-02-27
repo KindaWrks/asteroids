@@ -1,5 +1,4 @@
 import sys
-
 import pygame
 from pygame.display import update
 
@@ -30,6 +29,8 @@ def main():
     asteroid_field = AsteroidField()
     Player.containers = (updatable, drawable)
     player = Player(x, y)
+    SCORE = 0
+    font = pygame.font.SysFont("Arial", 32)
 
     running = True
     while running:
@@ -37,7 +38,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
         # These should be outside the event loop
         screen.fill("black")
         updatable.update(dt)
@@ -46,12 +46,24 @@ def main():
             if asteroid.collides_with(player):
                 print("Game over!")
                 sys.exit()
+
             for shot in shots:
                 if asteroid.collides_with(shot):
                     asteroid.split()
                     shot.kill()
 
+                    if asteroid.radius <= ASTEROID_MIN_RADIUS:
+                        SCORE += ASTEROID_SCORES['small']
+                    elif asteroid.radius <= ASTEROID_MED_RADIUS:
+                        SCORE += ASTEROID_SCORES['medium']
+                    elif asteroid.radius <= ASTEROID_LARGE_RADIUS:
+                        SCORE += ASTEROID_SCORES['large']
+                    else:
+                        SCORE += ASTEROID_SCORES['large']
+
         drawable.draw(screen)
+        score_text = font.render(f"Score: {SCORE}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
         pygame.display.flip()
 
 
