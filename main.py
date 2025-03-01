@@ -1,4 +1,6 @@
 import sys
+import time
+
 import pygame
 from pygame.display import update
 
@@ -45,6 +47,8 @@ def main():
         for asteroid in asteroids:
             if asteroid.collides_with(player):
                 print("Game over!")
+                game_over_text = font.render("GAME OVER", True, (255, 255, 255))
+                screen.blit(game_over_text, (550, 300))
                 sys.exit()
 
             for shot in shots:
